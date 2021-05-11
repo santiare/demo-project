@@ -7,11 +7,11 @@ echo "*********************"
 IMAGE="demo-project"
 
 echo "*** Logging in ***"
-docker login -u admin -p t2xm4nl1nux 10.245.64.11:8083
+docker login -u $nxUser -p $nxUser 10.245.64.11:8083
 
 echo "*** Tagging image ***"
-docker tag $IMAGE:latest 10.245.64.11:8083/$IMAGE:latest
+docker tag $IMAGE:latest $nxHost:8083/$IMAGE:latest
 
 echo "*** Pushing latest image ***"
-echo "* Pushing image 10.245.64.11:8083/$IMAGE:latest *"
-docker push 10.245.64.11:8083/$IMAGE:latest
+echo "* Pushing image $nxHost:8083/$IMAGE:latest *"
+docker push $nxHost:8083/$IMAGE:latest

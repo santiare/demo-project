@@ -3,7 +3,6 @@
 # Copy the new jar to the build location
 echo $PWD
 cp -f java-app/target/*.jar build/
-ls -lrt java-app/target/
 
 echo "*****************************"
 echo "*** Building Docker Image ***"

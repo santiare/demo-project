@@ -2,18 +2,8 @@
 
 - name: create service for deployment
   hosts: 10.245.64.17
-  # become: true
   user: devsecops
 
   tasks:
     - name: create a service
       shell: chdir=/home/devsecops kubectl apply -f k8s-demo-service.yml
-
-      #- name: touch test
-      #shell: chdir=/home/devsecops touch touching
-
-      #- name: test only
-      #shell: echo "hasasdfsdfsddfsdfellown" > /home/devsecops/touching
-      #      args:
-      #  creates: /tmp/hello      #command: "echo HELLOWN > /tmp/hello.txt"
-

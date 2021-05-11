@@ -1,7 +1,6 @@
 ---
 - name: Create pods using deployment 
   hosts: kubernetes-master
-  # become: true
   user: devsecops
  
   tasks: 
