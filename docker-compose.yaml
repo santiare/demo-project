@@ -1,0 +1,89 @@
+version: "3.8"
+
+services:
+  jenkins:
+    image: jenkins/jenkins:2.263.4-lts-alpine
+    container_name: jenkins-container
+    networks:
+      - sonarnet
+    build:
+      context: demo-project
+    restart: always
+    user: jenkins
+    ports:
+      - '8080:8080'
+      - '50000:50000'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '/data/jenkins/jenkins_home:/var/jenkins_home'
+    environment:
+      - "JENKINS_OPTS=--prefix=/jenkins"
+
+
+  gitlab:
+    image: gitlab/gitlab-ce:13.9.1-ce.0
+    container_name: gitlab-container
+    restart: always
+    ports:
+      - '10080:80'
+      - '10022:22'
+    volumes:
+      - '/data/gitlab/config:/etc/gitlab'
+      - '/data/gitlab/logs:/var/log/gitlab'
+      - '/data/gitlab/data:/var/opt/gitlab'
+    environment:
+      - GITLAB_SECRETS_DB_KEY_BASE=${gitlabsecrets}
+      - GITLAB_HOST=${gitlabhost}
+      - GITLAB_PORT=${gitlabport}
+      - GITLAB_SSH_PORT=${gitlabsshport}
+
+  nexus:
+    image: sonatype/nexus3:3.29.2
+    user: nexus
+    container_name: nexus-container
+    restart: always
+    ports:
+      - '8443:8443'
+      - '8082:8082'
+      - '8083:8083'
+    volumes:
+      - '/data/nexus:/nexus-data'
+
+  sonarqube:
+    image: sonarqube:8.6.1-community
+    user: root
+    container_name: sonar-container
+    restart: always
+    networks:
+      - sonarnet
+    ports:
+      - '9000:9000'
+      - '9092:9092'
+    volumes:
+      - '/data/sonar/sonarqube_conf:/opt/sonarqube/conf'
+      - '/data/sonar/sonarqube_data:/opt/sonarqube/data'
+      - '/data/sonar/sonarqube_extensions:/opt/sonarqube/extensions'
+      - '/data/sonar/sonarqube_bundled-plugins:/opt/sonarqube/lib/bundled-plugins'
+    environment:
+      - SONARQUBE_JDBC_USERNAME=${squsername}
+      - SONARQUBE_JDBC_PASSWORD=${sqpword}
+      - SONARQUBE_JDBC_URL=${sqjdbcurl}
+
+  postgressdb:
+    image: postgres:13.1
+    container_name: postgres-container
+    restart: always
+    networks:
+      - sonarnet
+    volumes:
+      - '/data/postgresql/sonarqube_db:/var/lib/postgresql'
+      - '/data/postgresql/postgresql_data:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_USER=${postgresuser}
+      - POSTGRES_PASSWORD=${postgrespass}
+      - POSTGRES_DB=${postgresdb}
+
+networks:
+   sonarnet:
+    driver: bridge
+
